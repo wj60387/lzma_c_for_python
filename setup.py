@@ -25,7 +25,7 @@ setup(
     ],
     options= {
         'bdist_wheel': {
-            'py_limited_api': 'cp311',  
+            'py_limited_api': 'cp37',  
         }
     }
         
