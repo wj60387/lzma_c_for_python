@@ -2,7 +2,9 @@
 
 # _lzma 是由 C 代码编译成的 .pyd/.so 文件
 # 直接导入 C 扩展模块，避免循环导入问题
-from lzma_c import _lzma
+import os
+
+__version__ = os.environ.get("LZMA_VERSION", "0.0.0.dev0")
 
 def compress(data: bytes) -> bytes:
     """
@@ -12,6 +14,7 @@ def compress(data: bytes) -> bytes:
     if not isinstance(data, bytes):
         raise TypeError("Input must be bytes.")
     
+    from . import _lzma
     compressed_data, props = _lzma.compress(data)
     
     original_size_bytes = len(data).to_bytes(8, 'little')
@@ -31,7 +34,7 @@ def decompress(stream: bytes) -> bytes:
     props = stream[:5]
     original_size = int.from_bytes(stream[5:13], 'little')
     compressed_data = stream[13:]
-    
+    from . import _lzma
     return _lzma.uncompress(compressed_data, props, original_size)
 
 # 导出公共 API

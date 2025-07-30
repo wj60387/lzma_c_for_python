@@ -4,7 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lzma_c"
-version = "1.0.1"
+# 1. 移除静态版本号
+# version = "1.0.1" 
+# 2. 声明版本是动态的
+dynamic = ["version"]
 authors = [
   { name="alex", email="469370972@qq.com" },
 ]
@@ -18,7 +21,9 @@ classifiers = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
-
+# 3. 告诉 setuptools 从哪里找到动态版本
+[tool.setuptools.dynamic]
+version = {attr = "lzma_c.__version__"}
 
 
 

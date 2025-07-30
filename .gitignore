@@ -3,3 +3,5 @@ dist/*
 *egg-info/
 build/
 v_*/
+__pycache__/
+*.pyc
