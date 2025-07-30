@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lzma_c_ext"
-version = "1.0.6"
+name = "lzma_c"
+version = "1.0.1"
 authors = [
   { name="alex", email="469370972@qq.com" },
 ]
