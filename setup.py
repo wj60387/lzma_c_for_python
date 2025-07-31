@@ -30,7 +30,12 @@ setup(
     }
         
 )
+# 0. 添加更改到暂存区
+# 1. 提交 git commit -m "feat: Add dynamic versioning from environment"
+# 2. 推送 git push origin main
+# 3. 打标签 git tag v1.0.3 
+# 4. 推送标签 git push origin v1.0.3
 
-# git tag v1.0.3
-# git push origin v1.0.3 
-# twine upload dist/*
+# 5 触发执行 Github Action
+
+# 6 上传whl twine upload dist/*
