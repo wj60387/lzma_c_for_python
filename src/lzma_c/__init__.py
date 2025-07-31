@@ -4,8 +4,11 @@
 # 直接导入 C 扩展模块，避免循环导入问题
 import os
 
-__version__ = os.environ.get("LZMA_VERSION", "0.0.0.dev0")
-
+version = os.environ.get("LZMA_VERSION", "0.0.0.dev0")
+# 如果版本号以 "v" 开头，就去掉它
+if version.startswith('v'):
+    version = version[1:]
+__version__ = version
 def compress(data: bytes) -> bytes:
     """
     Compresses data and returns a stream with a standard LZMA header.

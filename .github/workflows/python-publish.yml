@@ -3,41 +3,38 @@
 name: Build Python Wheels
 
 # 1. 何时触发：当有代码推送到主分支，或有人创建 Pull Request 时
+#    新增：当一个以 'v' 开头的标签被推送时
 on:
   push:
     branches: [ "main", "master" ]
+    tags:
+      - 'v*' # <-- 新增：在 v* 标签上触发
   pull_request:
     branches: [ "main", "master" ]
 
 jobs:
-  # 2. 定义一个名为 build_wheels 的任务
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
-    # 3. 在哪里运行：使用矩阵策略，在多个操作系统上并行运行
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
-    # 4. 做什么事：定义一系列步骤
     steps:
-      # 步骤 4.1: "检出"代码
-      # 把你的代码仓库内容下载到虚拟机（Runner）里
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 步骤 4.2: "构建" wheel 包
-      # 这是核心步骤，使用 pypa/cibuildwheel 这个预先配置好的 Action
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.19.1
-        # 你可以在这里添加环境变量来配置 cibuildwheel 的行为
-        # env:
-        #   CIBW_BUILD: "cp37-* cp38-*"  # 如果只想构建特定版本
+        # 新增：设置环境变量，将版本号传递给构建过程
+        env:
+          # github.ref_name 会自动获取标签名 (例如 "v1.0.3")
+          # 我们需要去掉开头的 'v'，所以这里假设您的 __init__.py 会处理
+          # 或者更稳妥的方式是直接使用标签名
+          LZMA_VERSION: ${{ github.ref_name }}
 
-      # 步骤 4.3: "上传"构建产物
-      # 将构建好的 wheel 文件保存为 "artifact"，方便你下载
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: python-wheels-${{ matrix.os }}
+          name: python-wheels-${{ matrix.os }}-${{ github.ref_name }} # <-- 让产物名称也包含版本号
           path: ./wheelhouse/*.whl
