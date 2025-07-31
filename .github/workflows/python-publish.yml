@@ -26,7 +26,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.19.1
         env:
           # 从 Git 标签设置版本号
-          LZMA_VERSION: ${{ github.ref_name }}
+          CIBW_ENVIRONMENT: LZMA_VERSION=${{ github.ref_name }}
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
