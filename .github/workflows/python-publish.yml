@@ -1,40 +1,41 @@
 # .github/workflows/build_wheels.yml
 
-name: Build Python Wheels
+name: Build and Release Python Wheels
 
-# 1. 何时触发：当有代码推送到主分支，或有人创建 Pull Request 时
-#    新增：当一个以 'v' 开头的标签被推送时
 on:
   push:
     branches: [ "main", "master" ]
     tags:
-      - 'v*' # <-- 新增：在 v* 标签上触发
+      - 'v*'
   pull_request:
     branches: [ "main", "master" ]
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+  # 任务2：仅在推送标签时进行发布构建
+  build_and_release:
+    name: Release wheels on ${{ matrix.os }}
+    # 条件：仅当触发事件是一个标签时运行
+    if: github.ref_type == 'tag'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build wheels
+      - uses: actions/checkout@v4
+      - name: Build wheels for release
         uses: pypa/cibuildwheel@v2.19.1
-        # 新增：设置环境变量，将版本号传递给构建过程
         env:
-          # github.ref_name 会自动获取标签名 (例如 "v1.0.3")
-          # 我们需要去掉开头的 'v'，所以这里假设您的 __init__.py 会处理
-          # 或者更稳妥的方式是直接使用标签名
+          # 从 Git 标签设置版本号
           LZMA_VERSION: ${{ github.ref_name }}
 
-      - name: Upload artifacts
+      - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: python-wheels-${{ matrix.os }}-${{ github.ref_name }} # <-- 让产物名称也包含版本号
+          name: python-wheels-${{ matrix.os }}-${{ github.ref_name }}
           path: ./wheelhouse/*.whl
+      
+      # 将来您可以在这里添加一个步骤，自动将 wheel 文件发布到 PyPI
+      # - name: Publish to PyPI
+      #   uses: pypa/gh-action-pypi-publish@release/v1
+      #   with:
+      #     password: ${{ secrets.PYPI_API_TOKEN }}
